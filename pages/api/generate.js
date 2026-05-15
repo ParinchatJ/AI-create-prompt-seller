@@ -4,23 +4,19 @@ export default async function handler(req, res) {
   const { rawPrompt } = req.body
   if (!rawPrompt) return res.status(400).json({ error: 'rawPrompt is required' })
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) return res.status(500).json({ error: 'ANTHROPIC_API_KEY not set in environment' })
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not set in environment' })
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1500,
-        messages: [{
-          role: 'user',
-          content: `You are a professional AI video prompt engineer for Sora and Veo.
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `You are a professional AI video prompt engineer for Sora and Veo.
 
 Polish this prompt:
 1. Keep ALL character visual descriptions EXACTLY — critical for character consistency across clips
@@ -33,14 +29,17 @@ Polish this prompt:
 Format clearly: VIDEO INFO → CHARACTERS (with full visual reference) → SCENES (numbered)
 
 ${rawPrompt}`
-        }]
-      })
-    })
+            }]
+          }],
+          generationConfig: { maxOutputTokens: 1500 }
+        })
+      }
+    )
 
     const data = await response.json()
     if (data.error) return res.status(500).json({ error: data.error.message })
 
-    const text = data.content?.map(b => b.text || '').join('\n') || rawPrompt
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || rawPrompt
     return res.status(200).json({ prompt: text })
   } catch (err) {
     return res.status(500).json({ error: err.message })
