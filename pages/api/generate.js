@@ -16,18 +16,23 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           contents: [{
             parts: [{
-              text: `You are a professional AI video prompt engineer for Sora and Veo.
+              text: `You are a professional AI video prompt engineer specializing in Google Veo and Sora.
 
-Polish this prompt:
-1. Keep ALL character visual descriptions EXACTLY — critical for character consistency across clips
-2. Fill missing context intelligently based on the concept
-3. Add vivid cinematic detail: lighting, colors, textures, atmosphere
-4. Keep Thai dialogue lines as-is; annotate each line with voice style in parentheses
-5. Add smooth camera transitions between scenes
-6. Reinforce character consistency instructions so the AI generates the same person in every scene
+Convert the structured input below into a **Veo-ready video prompt** in English. Output format must be:
 
-Format clearly: VIDEO INFO → CHARACTERS (with full visual reference) → SCENES (numbered)
+1. **One rich cinematic paragraph per scene** — written as a camera direction, not a list. Include: exact location, time of day, lighting, weather/atmosphere, character appearance (face, hair, outfit — exact details), action/movement, camera angle, camera movement, lens feel, color grade, mood. Be extremely specific and visual.
 
+2. **Character consistency block** at the top — describe each main character in one dense paragraph so Veo generates the same person every scene. Include: skin tone, face shape, hair, eyes, build, exact outfit with colors and textures.
+
+3. **Dialogue** — write each line as: [CHARACTER NAME, Thai language, ACCENT accent, PITCH pitch, VOICE STYLE]: "dialogue line"
+
+4. **No bullet points, no headers, no structured text** — pure cinematic prose that a filmmaker would write.
+
+5. Fill ALL missing details creatively based on the concept. Make it vivid, specific, and production-ready.
+
+6. Output in English only (keep Thai dialogue lines as-is inside quotes).
+
+INPUT:
 ${rawPrompt}`
             }]
           }],
